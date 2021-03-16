@@ -9,6 +9,8 @@ A simple prototype running Django in Gunicorn.
 ```
 pipenv install
 cd src
+export SECRET=$(openssl rand -hex 32)
+export DEBUG=true
 pipenv run gunicorn --config ./gunicorn.conf.py demo.wsgi:application
 ```
 
@@ -25,7 +27,17 @@ docker build --tag me/django .
 
 ```
 docker container run \
+  --env SECRET=$(openssl rand -hex 32) \
+  --env DEBUG=true \
   --rm --name django1 \
   --publish 8000:8000 \
   me/django:latest
 ```
+- Open http://localhost:8000/
+
+# To Do
+
+- [ ] Remove server http header
+- [ ] Set worker and thread dynamicly (according hardware config)
+- [ ] add django-health-check
+- [ ] Add HEALTHCHECK statement in dockerfle

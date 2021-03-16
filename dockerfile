@@ -3,15 +3,17 @@ FROM python:3.9-alpine
 WORKDIR /usr/src/app
 
 COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
+COPY docker-entrypoint.sh .
+COPY src .
 
-ADD src .
-
-# Build Static Files
-RUN python manage.py collectstatic --noinput
+RUN pip install --no-cache-dir -r requirements.txt \
+    && addgroup -g 1000 python \
+    && adduser -u 1000 -G python -s /bin/sh -D python \
+    && chown -R python:python /usr/src/app \
+    && chmod +x ./docker-entrypoint.sh
 
 EXPOSE 8000
 
-COPY docker-entrypoint.sh .
-RUN chmod +x ./docker-entrypoint.sh
+USER python
+
 ENTRYPOINT [ "./docker-entrypoint.sh" ]
