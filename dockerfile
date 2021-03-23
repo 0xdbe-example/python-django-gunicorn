@@ -1,4 +1,4 @@
-FROM python:3.9-alpine
+FROM python:3.9-slim
 
 WORKDIR /usr/src/app
 
@@ -7,8 +7,8 @@ COPY docker-entrypoint.sh .
 COPY src .
 
 RUN pip install --no-cache-dir -r requirements.txt \
-    && addgroup -g 1000 python \
-    && adduser -u 1000 -G python -s /bin/sh -D python \
+    && groupadd --gid 1000 python \
+    && useradd --uid 1000 --gid python --shell /bin/bash --create-home python \
     && chown -R python:python /usr/src/app \
     && chmod +x ./docker-entrypoint.sh
 
